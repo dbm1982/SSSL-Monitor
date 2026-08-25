@@ -1,8 +1,14 @@
 import os
 from datetime import datetime
 
-# Ensure site folder exists
 os.makedirs("site", exist_ok=True)
+
+schedule_html = ""
+try:
+    with open("site/data/schedule.html") as f:
+        schedule_html = f.read()
+except:
+    schedule_html = "<p>Schedule unavailable.</p>"
 
 html = f"""
 <html>
@@ -10,14 +16,14 @@ html = f"""
 <title>SSSL Monitor</title>
 <style>
 body {{ font-family: Arial; padding: 20px; }}
-img {{ max-width: 100%; border: 1px solid #ccc; margin-top: 20px; }}
+table {{ border-collapse: collapse; width: 100%; }}
+td, th {{ border: 1px solid #ccc; padding: 8px; }}
 </style>
 </head>
 <body>
 <h1>SSSL Schedule Monitor</h1>
 <p>Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-<p>Latest screenshot:</p>
-<img src="snapshot/schedule.png" alt="Schedule Screenshot">
+{schedule_html}
 </body>
 </html>
 """
