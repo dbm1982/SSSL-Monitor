@@ -13,15 +13,24 @@ if __name__ == "__main__":
 
     new_hash = fetch_hash()
     hash_file = "site/data/hash.txt"
+    status_file = "site/data/status.txt"
 
     old_hash = None
     if os.path.exists(hash_file):
         old_hash = open(hash_file).read().strip()
 
+    # Write the new hash
     with open(hash_file, "w") as f:
         f.write(new_hash)
 
+    # Determine status
     if old_hash and old_hash != new_hash:
-        print("CHANGE DETECTED")
+        status = "CHANGE DETECTED"
     else:
-        print("NO CHANGE")
+        status = "NO CHANGE"
+
+    # Write status file
+    with open(status_file, "w") as f:
+        f.write(status)
+
+    print(status)
