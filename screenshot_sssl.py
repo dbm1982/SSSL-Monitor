@@ -1,33 +1,41 @@
 import os
 import requests
 
-# Ensure the snapshot directory exists inside the site folder
 os.makedirs("site/snapshot", exist_ok=True)
 
 def capture():
-    print("Fetching screenshot from APIFLASH…")
+    print("Fetching screenshot from Microlink…")
 
     TARGET_URL = "https://southshoresoccer.com/schedule"
 
     api_url = (
-        "https://api.apiflash.com/v1/urltoimage"
+        "https://api.microlink.io"
         "?url=" + TARGET_URL +
-        "&format=png"
-        "&response_type=image"
-        "&full_page=true"
-        "&ttl=86400"
+        "&screenshot=true"
+        "&meta=false"
+        "&embed=screenshot.url"
+        "&waitUntil=networkidle2"
     )
 
-    response = requests.get(api_url)
+    # First request: get JSON containing screenshot URL
+    meta = requests.get(api_url).json()
 
-    print("Status:", response.status_code)
+    if "data" not in meta or "screenshot" not in meta["data"]:
+        print("ERROR: Microlink did not return screenshot metadata.")
+        print(meta)
+        return
 
-    if response.status_code != 200:
-        print("ERROR: Screenshot API failed")
+    screenshot_url = meta["data"]["screenshot"]["url"]
+
+    # Second request: download the actual PNG
+    img = requests.get(screenshot_url)
+
+    if img.status_code != 200:
+        print("ERROR: Failed to download screenshot PNG:", img.status_code)
         return
 
     with open("site/snapshot/schedule.png", "wb") as f:
-        f.write(response.content)
+        f.write(img.content)
 
     print("Screenshot saved successfully.")
 
