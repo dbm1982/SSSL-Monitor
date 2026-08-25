@@ -13,11 +13,12 @@ def capture():
             print("Loading schedule page…")
             response = page.goto("https://southshoresoccer.com/schedule", timeout=30000)
 
-            if not response or not response.ok:
-                print("ERROR: Page failed to load.")
-                print("Status:", response.status if response else "No response")
+            if not response:
+                print("ERROR: No response from server.")
             else:
-                print("Page loaded successfully.")
+                print("Status:", response.status)
+                if not response.ok:
+                    print("ERROR: Page failed to load.")
 
             print("Taking screenshot…")
             page.screenshot(path="site/snapshot/schedule.png")
