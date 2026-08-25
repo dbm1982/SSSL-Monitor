@@ -1,38 +1,24 @@
 import requests
 from bs4 import BeautifulSoup
 import os
-import sys
-import json
 
-URL = "https://www.southshoresoccer.com/Schedules"
-STATE_FILE = "state/schedule_status.json"
+def fetch_schedule():
+    url = "https://southshoresoccer.com/schedule"
+    html = requests.get(url).text
 
-def load_state():
-    if not os.path.exists(STATE_FILE):
-        return {"has_schedule": False}
-    with open(STATE_FILE, "r") as f:
-        return json.load(f)
+    soup = BeautifulSoup(html, "html.parser")
 
-def save_state(state):
-    os.makedirs("state", exist_ok=True)
-    with open(STATE_FILE, "w") as f:
-        json.dump(state, f)
+    # Extract the schedule table (adjust selector if needed)
+    table = soup.find("table")
 
-def schedules_available():
-    r = requests.get(URL, timeout=20)
-    soup = BeautifulSoup(r.text, "html.parser")
-    contests = soup.select(".contest")
-    return len(contests) > 0
+    if not table:
+        return "<p>Schedule unavailable.</p>"
+
+    return str(table)
 
 if __name__ == "__main__":
-    previous = load_state()
-    current = schedules_available()
+    os.makedirs("site/data", exist_ok=True)
+    schedule_html = fetch_schedule()
 
-    if current and not previous["has_schedule"]:
-        print("Schedules detected.")
-        save_state({"has_schedule": True})
-        sys.exit(1)
-    else:
-        print("No schedules yet.")
-        save_state({"has_schedule": current})
-        sys.exit(0)
+    with open("site/data/schedule.html", "w") as f:
+        f.write(schedule_html)
