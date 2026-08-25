@@ -5,23 +5,25 @@ import requests
 os.makedirs("site/snapshot", exist_ok=True)
 
 def capture():
-    print("Fetching screenshot from ScreenshotMachine…")
+    print("Fetching screenshot from APIFLASH…")
 
-    API_KEY = "YOUR_KEY"  # free key from screenshotmachine.com
     TARGET_URL = "https://southshoresoccer.com/schedule"
 
     api_url = (
-        f"https://api.screenshotmachine.com"
-        f"?key={API_KEY}"
-        f"&url={TARGET_URL}"
-        f"&dimension=1024xfull"
-        f"&format=png"
+        "https://api.apiflash.com/v1/urltoimage"
+        "?url=" + TARGET_URL +
+        "&format=png"
+        "&response_type=image"
+        "&full_page=true"
+        "&ttl=86400"
     )
 
     response = requests.get(api_url)
 
+    print("Status:", response.status_code)
+
     if response.status_code != 200:
-        print("ERROR: Screenshot API failed:", response.status_code)
+        print("ERROR: Screenshot API failed")
         return
 
     with open("site/snapshot/schedule.png", "wb") as f:
