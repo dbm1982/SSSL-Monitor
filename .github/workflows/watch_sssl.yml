@@ -1,0 +1,55 @@
+name: SSSL Schedule Watch
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 playwright
+          playwright install --with-deps
+
+      - name: Check schedule
+        id: check
+        run: python check_sssl_schedule.py
+
+      - name: Capture screenshot
+        if: steps.check.outcome == 'failure'
+        run: python screenshot_sssl.py
+
+      - name: Build website
+        if: steps.check.outcome == 'failure'
+        run: python build_site.py
+
+      - name: Deploy to GitHub Pages
+        if: steps.check.outcome == 'failure'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+
+      - name: Send SMS notification
+        if: steps.check.outcome == 'failure'
+        run: |
+          echo "SSSL schedules are LIVE!" | mail -s "SSSL Update" ${{ secrets.SMS_ADDRESS }}
+
+      - name: Upload screenshot
+        if: steps.check.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SSSL-Schedule-Screenshot
+          path: snapshot/schedule.png
