@@ -23,13 +23,18 @@ html = f"""
 <title>SSSL Monitor</title>
 <style>
 body {{ font-family: Arial; padding: 20px; }}
+.status {{
+    font-size: 2rem;
+    font-weight: bold;
+    color: {'green' if status_value == 'NO CHANGE' else 'red'};
+}}
 </style>
 </head>
 <body>
 <h1>SSSL Schedule Monitor</h1>
 <p>Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
 <p>Current hash: {hash_value}</p>
-<p>Status: {status_value}</p>
+<p class="status">{status_value}</p>
 </body>
 </html>
 """
