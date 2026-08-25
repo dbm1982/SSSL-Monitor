@@ -1,21 +1,31 @@
 import os
 from playwright.sync_api import sync_playwright
 
-# Ensure the snapshot directory exists inside the site folder
 os.makedirs("site/snapshot", exist_ok=True)
 
 def capture():
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page()
+    print("Starting Playwright…")
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            page = browser.new_page()
 
-        # Load the SSSL schedule page
-        page.goto("https://southshoresoccer.com/schedule")
+            print("Loading schedule page…")
+            response = page.goto("https://southshoresoccer.com/schedule", timeout=30000)
 
-        # Save screenshot into the published folder
-        page.screenshot(path="site/snapshot/schedule.png")
+            if not response or not response.ok:
+                print("ERROR: Page failed to load.")
+                print("Status:", response.status if response else "No response")
+            else:
+                print("Page loaded successfully.")
 
-        browser.close()
+            print("Taking screenshot…")
+            page.screenshot(path="site/snapshot/schedule.png")
+            print("Screenshot saved.")
+
+            browser.close()
+    except Exception as e:
+        print("Playwright ERROR:", e)
 
 if __name__ == "__main__":
     capture()
