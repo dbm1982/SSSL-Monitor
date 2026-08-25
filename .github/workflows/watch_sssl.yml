@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -29,7 +29,11 @@ jobs:
         run: python build_site.py
 
       - name: Debug filesystem
-        run: ls -R .
+        run: |
+          echo "CURRENT WORKING DIRECTORY:"
+          pwd
+          echo "LISTING ALL FILES RECURSIVELY:"
+          ls -R .
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
