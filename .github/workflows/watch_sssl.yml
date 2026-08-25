@@ -24,32 +24,16 @@ jobs:
           playwright install --with-deps
 
       - name: Check schedule
-        id: check
         run: python check_sssl_schedule.py
 
       - name: Capture screenshot
-        if: always()
         run: python screenshot_sssl.py
 
       - name: Build website
-        if: always()
         run: python build_site.py
 
       - name: Deploy to GitHub Pages
-        if: always()
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
-
-      - name: Send SMS notification
-        if: always()
-        run: |
-          echo "SSSL schedules are LIVE!" | mail -s "SSSL Update" ${{ secrets.SMS_ADDRESS }}
-
-      - name: Upload screenshot
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: SSSL-Schedule-Screenshot
-          path: snapshot/schedule.png
