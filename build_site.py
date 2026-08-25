@@ -1,8 +1,8 @@
 import os
 from datetime import datetime
 
-# Ensure site/snapshot exists
-os.makedirs("site/snapshot", exist_ok=True)
+# Ensure site folder exists (but do NOT recreate snapshot folder)
+os.makedirs("site", exist_ok=True)
 
 html = f"""
 <html>
