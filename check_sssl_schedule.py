@@ -3,12 +3,14 @@ from bs4 import BeautifulSoup
 import os
 
 def fetch_schedule():
-    url = "https://southshoresoccer.com/schedule"
-    html = requests.get(url).text
+    proxy_url = (
+        "https://api.allorigins.win/raw?"
+        "url=https://southshoresoccer.com/schedule"
+    )
 
+    html = requests.get(proxy_url).text
     soup = BeautifulSoup(html, "html.parser")
 
-    # Extract the schedule table (adjust selector if needed)
     table = soup.find("table")
 
     if not table:
