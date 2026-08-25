@@ -28,27 +28,27 @@ jobs:
         run: python check_sssl_schedule.py
 
       - name: Capture screenshot
-        if: steps.check.outcome == 'failure'
+        if: always()
         run: python screenshot_sssl.py
 
       - name: Build website
-        if: steps.check.outcome == 'failure'
+        if: always()
         run: python build_site.py
 
       - name: Deploy to GitHub Pages
-        if: steps.check.outcome == 'failure'
+        if: always()
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
 
       - name: Send SMS notification
-        if: steps.check.outcome == 'failure'
+        if: always()
         run: |
           echo "SSSL schedules are LIVE!" | mail -s "SSSL Update" ${{ secrets.SMS_ADDRESS }}
 
       - name: Upload screenshot
-        if: steps.check.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: SSSL-Schedule-Screenshot
