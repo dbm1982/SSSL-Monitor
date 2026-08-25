@@ -1,32 +1,33 @@
 import os
-from playwright.sync_api import sync_playwright
+import requests
 
+# Ensure the snapshot directory exists inside the site folder
 os.makedirs("site/snapshot", exist_ok=True)
 
 def capture():
-    print("Starting Playwright…")
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch()
-            page = browser.new_page()
+    print("Fetching screenshot from ScreenshotMachine…")
 
-            print("Loading schedule page…")
-            response = page.goto("https://southshoresoccer.com/schedule", timeout=30000)
+    API_KEY = "YOUR_KEY"  # free key from screenshotmachine.com
+    TARGET_URL = "https://southshoresoccer.com/schedule"
 
-            if not response:
-                print("ERROR: No response from server.")
-            else:
-                print("Status:", response.status)
-                if not response.ok:
-                    print("ERROR: Page failed to load.")
+    api_url = (
+        f"https://api.screenshotmachine.com"
+        f"?key={API_KEY}"
+        f"&url={TARGET_URL}"
+        f"&dimension=1024xfull"
+        f"&format=png"
+    )
 
-            print("Taking screenshot…")
-            page.screenshot(path="site/snapshot/schedule.png")
-            print("Screenshot saved.")
+    response = requests.get(api_url)
 
-            browser.close()
-    except Exception as e:
-        print("Playwright ERROR:", e)
+    if response.status_code != 200:
+        print("ERROR: Screenshot API failed:", response.status_code)
+        return
+
+    with open("site/snapshot/schedule.png", "wb") as f:
+        f.write(response.content)
+
+    print("Screenshot saved successfully.")
 
 if __name__ == "__main__":
     capture()
