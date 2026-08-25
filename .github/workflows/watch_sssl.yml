@@ -20,10 +20,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests
+          pip install requests beautifulsoup4
 
-      - name: Capture screenshot
-        run: python screenshot_sssl.py
+      - name: Fetch schedule
+        run: python check_sssl_schedule.py
 
       - name: Build website
         run: python build_site.py
@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "CURRENT WORKING DIRECTORY:"
           pwd
-          echo "LISTING ALL FILES RECURSIVELY:"
+          echo "LISTING ALL FILES:"
           ls -R .
 
       - name: Deploy to GitHub Pages
