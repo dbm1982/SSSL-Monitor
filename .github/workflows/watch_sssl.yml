@@ -20,17 +20,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4 playwright
-          playwright install --with-deps
-
-      - name: Check schedule
-        run: python check_sssl_schedule.py
+          pip install requests
 
       - name: Capture screenshot
         run: python screenshot_sssl.py
 
       - name: Build website
         run: python build_site.py
+
+      - name: Debug filesystem
+        run: ls -R .
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
