@@ -1,26 +1,27 @@
 import requests
-from bs4 import BeautifulSoup
+import hashlib
 import os
 
-def fetch_schedule():
-    proxy_url = (
-        "https://api.allorigins.win/raw?"
-        "url=https://southshoresoccer.com/schedule"
-    )
+URL = "https://textise.net/showtext.aspx?strURL=https://southshoresoccer.com/schedule"
 
-    html = requests.get(proxy_url).text
-    soup = BeautifulSoup(html, "html.parser")
-
-    table = soup.find("table")
-
-    if not table:
-        return "<p>Schedule unavailable.</p>"
-
-    return str(table)
+def fetch_hash():
+    text = requests.get(URL).text
+    return hashlib.sha256(text.encode()).hexdigest()
 
 if __name__ == "__main__":
     os.makedirs("site/data", exist_ok=True)
-    schedule_html = fetch_schedule()
 
-    with open("site/data/schedule.html", "w") as f:
-        f.write(schedule_html)
+    new_hash = fetch_hash()
+    hash_file = "site/data/hash.txt"
+
+    old_hash = None
+    if os.path.exists(hash_file):
+        old_hash = open(hash_file).read().strip()
+
+    with open(hash_file, "w") as f:
+        f.write(new_hash)
+
+    if old_hash and old_hash != new_hash:
+        print("CHANGE DETECTED")
+    else:
+        print("NO CHANGE")
