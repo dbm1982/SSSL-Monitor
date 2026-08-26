@@ -1,39 +1,32 @@
 name: SSSL Schedule Watch
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "*/5 * * * *"
-  workflow_dispatch:
+  repository_dispatch:
+    types: [external-trigger]
 
 jobs:
-  watch:
+  check:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.x"
 
       - name: Install dependencies
-        run: |
-          pip install requests beautifulsoup4
+        run: pip install requests
 
-      - name: Fetch schedule
+      - name: Run schedule check
         run: python check_sssl_schedule.py
 
       - name: Build website
         run: python build_site.py
-
-      - name: Debug filesystem
-        run: |
-          echo "CURRENT WORKING DIRECTORY:"
-          pwd
-          echo "LISTING ALL FILES:"
-          ls -R .
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
