@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import zoneinfo
 
 os.makedirs("site", exist_ok=True)
 
@@ -17,6 +18,10 @@ if os.path.exists(status_file):
     with open(status_file) as f:
         status_value = f.read().strip()
 
+# Local timezone (Maine)
+local_tz = zoneinfo.ZoneInfo("America/New_York")
+timestamp = datetime.now(tz=local_tz).strftime('%Y-%m-%d %H:%M:%S')
+
 html = f"""
 <html>
 <head>
@@ -32,7 +37,7 @@ body {{ font-family: Arial; padding: 20px; }}
 </head>
 <body>
 <h1>SSSL Schedule Monitor</h1>
-<p>Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+<p>Last updated: {timestamp}</p>
 <p>Current hash: {hash_value}</p>
 <p class="status">{status_value}</p>
 </body>
